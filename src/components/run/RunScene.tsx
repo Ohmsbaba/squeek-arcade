@@ -79,7 +79,8 @@ function Stage({ live, reduced }: { live: MutableRefObject<RunLive>; reduced: bo
     const clampDt = Math.min(dt, 0.05);
     const l = live.current;
     const t = state.clock.elapsedTime;
-    const phase = l.phase;
+    // After a cash-out the wheel carries on as if running, then stops like a loss. The player's already safe.
+    const phase = l.phase === "overtime" ? "running" : l.phase === "missed" ? "lost" : l.phase;
     const w = wheel.current;
     const h = hamster.current;
 

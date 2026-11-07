@@ -33,6 +33,20 @@ test("cash out before the stop: paid by the server, shown everywhere", async ({ 
         expect(body.round.payout).toBeGreaterThanOrEqual(body.round.stake);
         await expect.poll(() => balance(page)).toBe(before - body.round.stake + body.round.payout);
         await expect(page.getByTestId("run-history-row").first()).toContainText("Cashed");
+        // The wheel runs on to its real stop, then says what that meant.
+        if (body.round.crashMult > body.round.resultMult) {
+          await expect(page.getByTestId("overtime-live").or(page.getByTestId("overtime-verdict"))).toBeVisible({ timeout: 10_000 });
+          if (body.round.crashMult < 1000) {
+            const verdict = page.getByTestId("overtime-verdict");
+            await expect(verdict).toBeVisible({ timeout: 45_000 });
+            await expect(verdict).toContainText((body.round.crashMult / 100).toFixed(2));
+          }
+        }
+        // And starting again cuts the replay short.
+        await expect(page.getByTestId("start-run")).toBeEnabled();
+        await page.getByTestId("start-run").click();
+        await expect(page.getByTestId("cash-out").or(page.getByTestId("round-result")).first()).toBeVisible({ timeout: 15_000 });
+        await expect(page.getByTestId("overtime-verdict")).toHaveCount(0);
         expect(errors).toEqual([]);
         return;
       }

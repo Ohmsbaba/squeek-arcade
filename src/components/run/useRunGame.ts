@@ -4,9 +4,19 @@ import { api, ApiError, newRequestKey } from "@/client/api";
 import { sound } from "@/client/sound";
 import { clientSeed, useArcade } from "@/client/store";
 import type { Commit, PublicRound, Settled } from "@/client/types";
-import { displayMultAt, RUN_COUNTDOWN_MS } from "@/shared/run-curve";
+import { blockBonusBp, displayMultAt, msToReach, RUN_COUNTDOWN_MS } from "@/shared/run-curve";
 
-export type RunPhase = "idle" | "starting" | "countdown" | "running" | "won" | "lost";
+/** How long the cash-out moment holds before the wheel carries on without the player. */
+const OVERTIME_DELAY_MS = 1100;
+
+/**
+ * "overtime" and "missed" follow a cash-out: the player is safe and paid, and the wheel keeps
+ * turning on its own until its stop, so they can see what they left behind, or what they dodged.
+ */
+export type RunPhase = "idle" | "starting" | "countdown" | "running" | "won" | "lost" | "overtime" | "missed";
+
+/** What the wheel did after the player left. All of it is known once the round settles and the seed is revealed. */
+export type Overtime = { cashMult: number; stopMult: number; stake: number; paid: number; bonusBp: number; marginMs: number };
 
 /** Read every frame by the scene and the display. Lives outside React so nothing re-renders at 60 fps. */
 export type RunLive = {
@@ -36,6 +46,9 @@ export function useRunGame() {
   const [reconnecting, setReconnecting] = useState(false);
   const [cashing, setCashing] = useState(false);
   const [historyBump, setHistoryBump] = useState(0);
+  const [overtime, setOvertime] = useState<Overtime | null>(null);
+  const ghost = useRef(0);
+  const ghostTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const offset = useRef(0);
   const liftoff = useRef(0);
@@ -59,6 +72,45 @@ export function useRunGame() {
     setReconnecting(false);
   }, []);
 
+  const stopOvertime = useCallback(() => {
+    cancelAnimationFrame(ghost.current);
+    if (ghostTimer.current) clearTimeout(ghostTimer.current);
+    ghostTimer.current = null;
+  }, []);
+
+  /** After a cash-out the wheel runs on to its real stop, now that the stop is public. */
+  const runOvertime = useCallback((s: Settled) => {
+    const r = s.round;
+    const cash = r.resultMult ?? 100;
+    const stop = r.crashMult ?? cash;
+    if (stop <= cash || !r.liftoffAt) return;
+    const liftoffAt = new Date(r.liftoffAt).getTime();
+    const stopAt = liftoffAt + msToReach(stop);
+    setOvertime({
+      cashMult: cash, stopMult: stop, stake: r.stake, paid: r.payout ?? 0,
+      bonusBp: r.live.boostBp + blockBonusBp(r.live.blocksMined), marginMs: msToReach(stop) - msToReach(cash),
+    });
+    ghostTimer.current = setTimeout(() => {
+      if (roundId.current !== r.id) return;
+      setPhase("overtime");
+      sound.startWheel();
+      const loop = () => {
+        if (roundId.current !== r.id) return;
+        const now = Date.now() + offset.current;
+        if (now >= stopAt) {
+          live.current.mult = stop / 100;
+          setPhase("missed");
+          sound.wheelStop();
+          return;
+        }
+        live.current.mult = displayMultAt(now - liftoffAt);
+        sound.setWheel(Math.min(1, Math.log(live.current.mult) / Math.log(50)) * 0.6);
+        ghost.current = requestAnimationFrame(loop);
+      };
+      ghost.current = requestAnimationFrame(loop);
+    }, OVERTIME_DELAY_MS);
+  }, [setPhase]);
+
   const finish = useCallback((s: Settled) => {
     if (finished.current || roundId.current !== s.round.id) return;
     finished.current = true;
@@ -78,7 +130,8 @@ export function useRunGame() {
     }
     applySettled(s);
     setHistoryBump((n) => n + 1);
-  }, [applySettled, closeLinks, setPhase]);
+    if (won) runOvertime(s);
+  }, [applySettled, closeLinks, runOvertime, setPhase]);
 
   const startLoop = useCallback(() => {
     cancelAnimationFrame(frame.current);
@@ -141,6 +194,8 @@ export function useRunGame() {
   }, [closeLinks, finish, poll]);
 
   const follow = useCallback((r: PublicRound, serverNow: number, sentAt: number, gotAt: number) => {
+    stopOvertime();
+    setOvertime(null);
     offset.current = serverNow + (gotAt - sentAt) / 2 - gotAt;
     liftoff.current = new Date(r.liftoffAt!).getTime();
     roundId.current = r.id;
@@ -153,7 +208,7 @@ export function useRunGame() {
     setAwayNotice(false);
     connect(r.id);
     startLoop();
-  }, [connect, startLoop]);
+  }, [connect, startLoop, stopOvertime]);
 
   // A refresh mid-round picks the same round back up from the server.
   useEffect(() => {
@@ -178,15 +233,19 @@ export function useRunGame() {
       .catch(() => {});
     return () => {
       dead = true;
+      stopOvertime();
       cancelAnimationFrame(frame.current);
       closeLinks();
       sound.stopWheel();
     };
-  }, [applySettled, closeLinks, follow, setPhase]);
+  }, [applySettled, closeLinks, follow, setPhase, stopOvertime]);
 
   const start = useCallback(async (stake: number, autoCashout: number | null) => {
     const me = useArcade.getState().me;
     if (!me || !finished.current) return;
+    // Starting again cuts the replay short: the next round is what matters.
+    stopOvertime();
+    sound.stopWheel();
     setError(null);
     setPhase("starting");
     sound.click();
@@ -215,7 +274,7 @@ export function useRunGame() {
       setError(e instanceof ApiError ? e.message : "The wheel wouldn't start.");
       setPhase("idle");
     }
-  }, [follow, setBalance, setCommit, setPhase]);
+  }, [follow, setBalance, setCommit, setPhase, stopOvertime]);
 
   const cashOut = useCallback(async () => {
     const id = roundId.current;
@@ -239,5 +298,5 @@ export function useRunGame() {
     if (!finished.current) setError("Couldn't reach the arcade to cash out. Press again, the wheel is still turning.");
   }, [cashing, finish]);
 
-  return { live, phase, round, last, awayNotice, error, reconnecting, cashing, historyBump, start, cashOut, countdownMs: RUN_COUNTDOWN_MS };
+  return { live, phase, round, last, overtime, awayNotice, error, reconnecting, cashing, historyBump, start, cashOut, countdownMs: RUN_COUNTDOWN_MS };
 }

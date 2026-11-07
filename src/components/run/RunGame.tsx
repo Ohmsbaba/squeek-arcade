@@ -32,6 +32,32 @@ function StageLoading() {
   return <div className="flex h-full w-full items-center justify-center font-data text-xs text-gray">Waking the wheel…</div>;
 }
 
+/** After the wheel stops on its own: what staying in would have paid, or how close the stop came. */
+function OvertimeVerdict({ ot }: { ot: import("./useRunGame").Overtime }) {
+  // The most anyone could have taken is a hair under the stop: reaching it is the stop.
+  const bestMult = ot.stopMult - 1;
+  const couldHave = livePayout(ot.stake, bestMult, ot.bonusBp);
+  const missed = Math.max(0, couldHave - ot.paid);
+  const seconds = ot.marginMs / 1000;
+  const close = seconds < 2 || ot.stopMult <= ot.cashMult * 1.1;
+  return (
+    <div className="mt-2 border-t border-line2 pt-2" data-testid="overtime-verdict">
+      {close ? (
+        <>
+          <p className="font-display text-lg font-semibold uppercase leading-tight tracking-wide text-gold">Lucky escape</p>
+          <p className="font-data text-[11px] text-lit">It stopped at {mult(ot.stopMult)}, just {seconds < 1 ? `${Math.round(ot.marginMs)} ms` : `${seconds.toFixed(1)} s`} after you left.</p>
+        </>
+      ) : (
+        <>
+          <p className="font-display text-lg font-semibold uppercase leading-tight tracking-wide text-tile">It ran on to {mult(ot.stopMult)}</p>
+          <p className="font-data text-[11px] text-lit">Holding to {mult(bestMult)} would have paid {credits(couldHave)}, {credits(missed)} more. It stopped {seconds.toFixed(1)} s after you left.</p>
+        </>
+      )}
+      <p className="mt-0.5 font-data text-[10px] text-dim">Every round is independent. Where this one stopped says nothing about the next.</p>
+    </div>
+  );
+}
+
 /** Updates the potential payout a few times a second, without re-rendering the whole game. */
 function PotentialPayout({ live, stake, phase, bonusBp }: { live: ReturnType<typeof useRunGame>["live"]; stake: number; phase: string; bonusBp: number }) {
   const ref = useRef<HTMLSpanElement>(null);
@@ -116,7 +142,9 @@ export function RunGame() {
     return () => window.removeEventListener("keydown", onKey);
   }, []);
 
-  const outcome = last && (phase === "won" || phase === "lost") ? last : null;
+  const afterCashOut = phase === "won" || phase === "overtime" || phase === "missed";
+  const outcome = last && (afterCashOut || phase === "lost") ? last : null;
+  const ot = game.overtime;
 
   const actionButton = phase === "running" ? (
     <button
@@ -181,18 +209,22 @@ export function RunGame() {
                 initial={{ opacity: 0, y: -8, scale: 0.94 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0 }}
-                className={`pointer-events-auto rounded-[6px] border px-4 py-2 text-center ${phase === "won" ? "border-mint/60 bg-[#0c1f16]/95" : "border-reactor/60 bg-[#240e12]/95"}`}
+                className={`pointer-events-auto rounded-[6px] border px-4 py-2 text-center ${afterCashOut ? "border-mint/60 bg-[#0c1f16]/95" : "border-reactor/60 bg-[#240e12]/95"}`}
               >
                 <p className="font-display text-xl font-semibold uppercase leading-none tracking-wide sm:text-2xl">
-                  {phase === "won" ? `Cashed out at ${mult(outcome.round.resultMult)}` : `Wheel stopped at ${mult(outcome.round.crashMult)}`}
+                  {afterCashOut ? `Cashed out at ${mult(outcome.round.resultMult)}` : `Wheel stopped at ${mult(outcome.round.crashMult)}`}
                 </p>
                 <p className="mt-1 font-data text-xs text-lit">
-                  {phase === "won"
+                  {afterCashOut
                     ? `Paid ${credits(outcome.round.payout ?? 0)}, net ${signed(outcome.round.net ?? 0)}${outcome.round.live.boostBp + blockBonusBp(outcome.round.live.blocksMined) > 0 ? `, with +${Math.round((outcome.round.live.boostBp + blockBonusBp(outcome.round.live.blocksMined)) / 100)}% live bonus` : ""}`
                     : "Squeektoshi hopped off for a snack."}
                   {outcome.xpGained > 0 && <span className="text-mint"> · +{outcome.xpGained} XP</span>}
                 </p>
                 {game.awayNotice && <p className="mt-1 font-data text-[11px] text-gray">This finished while you were away.</p>}
+                {ot && phase === "overtime" && (
+                  <p className="mt-1 font-data text-[11px] text-tile" data-testid="overtime-live">You&apos;re out and paid. The wheel keeps turning to show where it would have stopped…</p>
+                )}
+                {ot && phase === "missed" && <OvertimeVerdict ot={ot} />}
               </motion.div>
             )}
           </AnimatePresence>

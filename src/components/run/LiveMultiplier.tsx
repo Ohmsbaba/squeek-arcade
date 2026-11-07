@@ -19,7 +19,7 @@ export function LiveMultiplier({ live, height = 64 }: { live: MutableRefObject<R
         if (l.phase === "countdown") text = String(Math.max(1, Math.ceil(l.countdown)));
         else if (l.phase === "idle" || l.phase === "starting") text = "1.00x";
         else text = `${l.mult.toFixed(2)}x`;
-        const color = l.phase === "won" ? "#35d07f" : l.phase === "lost" ? "#f44a5e" : l.phase === "countdown" ? "#5b7cfa" : l.phase === "running" ? "#f2c230" : "#b4b4c0";
+        const color = l.phase === "won" ? "#35d07f" : l.phase === "lost" ? "#f44a5e" : l.phase === "overtime" ? "#7c97fb" : l.phase === "missed" ? "#9aa6d8" : l.phase === "countdown" ? "#5b7cfa" : l.phase === "running" ? "#f2c230" : "#b4b4c0";
         const key = `${text}|${color}|${height}`;
         if (key !== last) {
           last = key;

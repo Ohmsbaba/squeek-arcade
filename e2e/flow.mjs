@@ -43,5 +43,15 @@ await page.waitForSelector('[data-testid="round-result"]', { timeout: 60000 });
 await page.waitForTimeout(900);
 await page.screenshot({ path: `${out}/run-end-${tag}.png` });
 console.log("result", await page.textContent('[data-testid="round-result"]'));
+if (await page.$('[data-testid="overtime-live"]').catch(() => null)) {
+  await page.waitForTimeout(1200);
+  await page.screenshot({ path: `${out}/run-overtime-${tag}.png` });
+}
+const verdict = await page.waitForSelector('[data-testid="overtime-verdict"]', { timeout: 40000 }).catch(() => null);
+if (verdict) {
+  await page.waitForTimeout(700);
+  await page.screenshot({ path: `${out}/run-verdict-${tag}.png` });
+  console.log("verdict", await verdict.textContent());
+}
 console.log("errors", JSON.stringify(errors.slice(0, 10), null, 1));
 await browser.close();

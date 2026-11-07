@@ -14,7 +14,8 @@ export default function RunFallback({ live, reduced }: { live: MutableRefObject<
     const loop = (now: number) => {
       const dt = Math.min(0.05, (now - last) / 1000);
       last = now;
-      const l = live.current;
+      const raw = live.current;
+      const l = { ...raw, phase: raw.phase === "overtime" ? "running" : raw.phase === "missed" ? "lost" : raw.phase };
       const mirror = l.phase === "idle" || l.phase === "starting" ? Math.min(14, (l.realRpm * Math.PI * 2) / 60) : 0;
       const target = l.phase === "running" ? Math.min(30, 4 + 7 * Math.log(Math.max(1, l.mult))) : mirror;
       const rate = l.phase === "lost" ? 14 : l.phase === "won" ? 1.3 : 3;
