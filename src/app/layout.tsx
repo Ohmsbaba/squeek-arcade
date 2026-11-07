@@ -30,6 +30,8 @@ export const metadata: Metadata = {
   description: "A hamster-powered arcade for the Squeekchain ecosystem. Drop your Squeek through a pegboard, or race the wheel and cash out before it stops. Free daily points, provably fair.",
   openGraph: { siteName: "Squeek Arcade", type: "website" },
   icons: { icon: "/brand/squeekchain-mark.png" },
+  // Squeekchain builder programme ownership tag. It's rechecked daily, so don't remove it.
+  other: { "squeekchain-project": "d38ccef2-ce3e-4e0a-8953-b866603d7853" },
 };
 
 export const viewport: Viewport = { themeColor: "#0b0b0d", width: "device-width", initialScale: 1, viewportFit: "cover" };

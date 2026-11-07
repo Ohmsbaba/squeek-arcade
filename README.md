@@ -1,5 +1,7 @@
 # Squeek Arcade
 
+Live at https://squeekarcade.fun
+
 A hamster-powered arcade for the Squeekchain ecosystem. Community-built, not an official Squeekchain product.
 
 - **Squeek Drops**: drop up to ten tokens at once, or Squeeks you hold, through a 3D pegboard. A real rigid-body simulation decides where they land, and they knock into each other on the way.
@@ -44,3 +46,9 @@ Browser tests expect a server on port 3400 and use its database. Against `next s
 See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md). Fairness is explained for players at `/fairness`.
 
 If the physics or the board geometry changes, every published drop stops verifying and the pay tables go stale. Run `npm run calibrate`, then `npx tsx scripts/determinism-golden.ts`, and update the pinned test vector deliberately.
+
+## Squeekchain builder programme
+
+This line proves the project belongs to its Genesis profile. It's rechecked daily, so keep it here.
+
+squeekchain-project: d38ccef2-ce3e-4e0a-8953-b866603d7853
