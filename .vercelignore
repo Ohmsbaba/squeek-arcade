@@ -1,0 +1,11 @@
+.env
+.env.*
+!.env.example
+.next
+node_modules
+test-results
+playwright-report
+e2e
+tests
+*.tsbuildinfo
+.admin-password.txt

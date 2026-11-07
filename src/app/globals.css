@@ -1,0 +1,65 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root { color-scheme: dark; }
+html, body { background: #0b0b0d; color: #ededf0; }
+body {
+  font-family: var(--font-voice), system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  overscroll-behavior-y: none;
+  /* The brand's dotted grid, kept quiet. */
+  background-image: radial-gradient(#1b1b21 1px, transparent 1.4px);
+  background-size: 18px 18px;
+}
+button { -webkit-tap-highlight-color: transparent; }
+:focus-visible { outline: 2px solid #f2c230; outline-offset: 2px; }
+::selection { background: #f2c230; color: #0b0b0d; }
+.tabular { font-variant-numeric: tabular-nums; }
+
+@layer components {
+  .eyebrow { @apply font-data text-[11px] uppercase tracking-[0.14em] text-gray; }
+  .title { @apply font-display font-semibold uppercase leading-none tracking-wide; }
+
+  /* A machined plate with rivets. The arcade's one surface. */
+  .plate {
+    @apply relative rounded-[6px] border border-line bg-raised;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.035), 0 8px 24px -16px #000;
+    background-image:
+      radial-gradient(circle at 7px 7px, #33333d 1.2px, transparent 1.8px),
+      radial-gradient(circle at calc(100% - 7px) 7px, #33333d 1.2px, transparent 1.8px),
+      radial-gradient(circle at 7px calc(100% - 7px), #33333d 1.2px, transparent 1.8px),
+      radial-gradient(circle at calc(100% - 7px) calc(100% - 7px), #33333d 1.2px, transparent 1.8px);
+  }
+
+  /* A real arcade key: it has travel. */
+  .key {
+    @apply relative inline-flex select-none items-center justify-center gap-2 rounded-[6px] font-display font-semibold uppercase tracking-wider transition-[transform,box-shadow,background-color,filter] duration-75;
+    box-shadow: 0 var(--travel, 4px) 0 var(--edge, #000), 0 calc(var(--travel, 4px) + 6px) 14px -6px rgba(0,0,0,.7), inset 0 1px 0 rgba(255,255,255,.25);
+    margin-bottom: var(--travel, 4px);
+    touch-action: manipulation;
+  }
+  .key:active:not(:disabled) { transform: translateY(var(--travel, 4px)); box-shadow: 0 0 0 var(--edge, #000), inset 0 1px 0 rgba(255,255,255,.15); }
+  .key:disabled { @apply cursor-not-allowed opacity-40; }
+  .key-gold { @apply bg-gold text-ink hover:bg-amber; --edge: #8f6e12; }
+  .key-mint { @apply bg-mint text-ink; --edge: #1a7a48; }
+  .key-tile { @apply bg-tile text-white hover:bg-[#6d8bfb]; --edge: #2c3f94; }
+  .key-dark { @apply border border-line2 bg-panel text-paper hover:border-gold hover:text-gold; --edge: #000; --travel: 3px; }
+
+  .chip {
+    @apply inline-flex items-center gap-1.5 rounded-[4px] border border-line2 bg-panel px-2.5 py-1.5 font-data text-xs text-lit transition-colors hover:border-gold hover:text-gold;
+  }
+  .chip[data-on="true"] { @apply border-gold bg-gold/10 text-gold; }
+  .field {
+    @apply w-full min-w-0 rounded-[4px] border border-line2 bg-ink px-3 py-2 font-data text-sm text-paper outline-none placeholder:text-dim focus:border-gold;
+  }
+  .link { @apply text-gold underline decoration-gold/40 underline-offset-2 hover:decoration-gold; }
+}
+
+.no-scrollbar { scrollbar-width: none; }
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.thin-scrollbar { scrollbar-width: thin; scrollbar-color: #2f2f39 transparent; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
+}

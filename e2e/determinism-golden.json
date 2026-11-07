@@ -1,0 +1,548 @@
+[
+ {
+  "digest": "77abc86d5c37fe261ce84966b29ddcc90a2ced0dc4ff460df01f852a98327ff8",
+  "chute": -3,
+  "balls": 1,
+  "slots": [
+   3
+  ],
+  "catchFrames": [
+   324
+  ],
+  "hash": "88f53c17c7d8195c284a32bb496b7ce571057228c2029094fbca3c3973996b9f"
+ },
+ {
+  "digest": "2442ffeede6ab0781f47fb14845f2683237ccb5e6cd26af1d2be97f972d24b9e",
+  "chute": -2,
+  "balls": 3,
+  "slots": [
+   4,
+   3,
+   3
+  ],
+  "catchFrames": [
+   274,
+   287,
+   244
+  ],
+  "hash": "e047cb4f05eb12bed86ad7fd1ef0de1f518485416d0cf57803d5f5fceb0578cc"
+ },
+ {
+  "digest": "7fc3c2c1eb9394af89bee45c15f85978439e1a17e71a3562f1706b10ea641b04",
+  "chute": -1,
+  "balls": 5,
+  "slots": [
+   3,
+   2,
+   5,
+   5,
+   4
+  ],
+  "catchFrames": [
+   225,
+   243,
+   272,
+   171,
+   270
+  ],
+  "hash": "820c5ff209480e0f2db2c415f25de7069a23efc0e5e951527a33a60eb4f8bac7"
+ },
+ {
+  "digest": "336e4be6f30cfa46f61ef5b3323991e17906cfee427513c00fef059ed4a9addd",
+  "chute": 0,
+  "balls": 10,
+  "slots": [
+   2,
+   5,
+   7,
+   2,
+   7,
+   3,
+   5,
+   10,
+   7,
+   5
+  ],
+  "catchFrames": [
+   205,
+   276,
+   297,
+   221,
+   233,
+   245,
+   277,
+   279,
+   292,
+   228
+  ],
+  "hash": "7ff92c0e21c38560a6f95a84ae6f6b7c559696a915a8da053336e489d6228e11"
+ },
+ {
+  "digest": "899495bbab1c65f7145b3cd960010db25dda42adcb41885e3a375d011b8e2e90",
+  "chute": 1,
+  "balls": 1,
+  "slots": [
+   5
+  ],
+  "catchFrames": [
+   260
+  ],
+  "hash": "595ea86bbb18091cc841b4393cb65457813b4953d904e0699df51c465153d922"
+ },
+ {
+  "digest": "d7837a735e63d4506ca548bc37308f3702329c20cdba0312a75ea7e971faccb4",
+  "chute": 2,
+  "balls": 3,
+  "slots": [
+   8,
+   6,
+   7
+  ],
+  "catchFrames": [
+   267,
+   259,
+   237
+  ],
+  "hash": "ce7db19247c33fc9965fb6cf872590c7dc9fb79900b0af3cc328a5ece2f23764"
+ },
+ {
+  "digest": "9b531443d9d646ce4b32263a74ea384c0d1f871f1b8db9fb8849380e75d233ae",
+  "chute": 3,
+  "balls": 5,
+  "slots": [
+   7,
+   9,
+   8,
+   10,
+   8
+  ],
+  "catchFrames": [
+   223,
+   199,
+   262,
+   239,
+   214
+  ],
+  "hash": "5e13b1445ef06db34862279fb20ad492f6a85c1ea5ea388fc6888c46b16b1bdf"
+ },
+ {
+  "digest": "d1e73bb4cd6444b01d2827587bf640ed6f93046659afe3a58b4381536dbfe1af",
+  "chute": -3,
+  "balls": 10,
+  "slots": [
+   3,
+   3,
+   3,
+   4,
+   5,
+   0,
+   2,
+   2,
+   3,
+   1
+  ],
+  "catchFrames": [
+   198,
+   240,
+   284,
+   215,
+   229,
+   214,
+   265,
+   294,
+   279,
+   306
+  ],
+  "hash": "1947576b87423e57aecd7c97b346fae919ccc4da7b408b00efb5b4152d136997"
+ },
+ {
+  "digest": "d93d69a1bf9d577d2b9953a99fab4936773afb054f3b2bf843b960a25bc11adc",
+  "chute": -2,
+  "balls": 1,
+  "slots": [
+   4
+  ],
+  "catchFrames": [
+   216
+  ],
+  "hash": "aafae78a398d67e67d18258d25081ffb6a22cb58e59d0a96c6ff09b93fa30225"
+ },
+ {
+  "digest": "b9e2abdb9e65c233bd4cd67f3f7e2d16aebf6bf08e29720f5760f420f557e54b",
+  "chute": -1,
+  "balls": 3,
+  "slots": [
+   3,
+   4,
+   4
+  ],
+  "catchFrames": [
+   265,
+   300,
+   244
+  ],
+  "hash": "3a4c06f94259cdb628a9a66c608bd55b5141a48ab36a6c0cf69cfda6ee2f0426"
+ },
+ {
+  "digest": "3d199396b28eb4c9a417b1849aa3bb6697681c1c6f2a42c55a4853e09a2cc19f",
+  "chute": 0,
+  "balls": 5,
+  "slots": [
+   3,
+   2,
+   6,
+   4,
+   7
+  ],
+  "catchFrames": [
+   291,
+   251,
+   240,
+   218,
+   224
+  ],
+  "hash": "38d7bcea5af38a18024b4e246743a179254074ac51ecac5498cb31633b42f98d"
+ },
+ {
+  "digest": "bcafb082d44ccafc7ee8a248d15988899ef0d7ee06ebe417bbbb90880ad05a7f",
+  "chute": 1,
+  "balls": 10,
+  "slots": [
+   5,
+   6,
+   7,
+   6,
+   8,
+   4,
+   7,
+   7,
+   5,
+   10
+  ],
+  "catchFrames": [
+   241,
+   265,
+   247,
+   216,
+   240,
+   278,
+   250,
+   291,
+   265,
+   217
+  ],
+  "hash": "ef432195645ef16b3ee90eee3f25630ae9f1524c8ce8f448e76c6047fe552389"
+ },
+ {
+  "digest": "8f43abe8f7d4858a3e733396acfa14efb1e4bbc3b4267bb9963893ad06b9ded3",
+  "chute": 2,
+  "balls": 1,
+  "slots": [
+   5
+  ],
+  "catchFrames": [
+   237
+  ],
+  "hash": "c99859296acaa20fb5852c4bc165f5cc1c44110e28fe44a9fc3c7a83b3c58154"
+ },
+ {
+  "digest": "1812f0ee3b82f22d25f4b40761c6c1a033618e444f99bc362ea7455e4d677517",
+  "chute": 3,
+  "balls": 3,
+  "slots": [
+   8,
+   8,
+   7
+  ],
+  "catchFrames": [
+   264,
+   289,
+   229
+  ],
+  "hash": "901537c23530321c79dc97dd692ef2961e3d4b2203a5b499e4cb7e1723713fec"
+ },
+ {
+  "digest": "77b76bb79d5651ca7831584a52b52ebdf51d8bb383734c4a0d2b5aa0d8de9d9c",
+  "chute": -3,
+  "balls": 5,
+  "slots": [
+   2,
+   3,
+   4,
+   2,
+   2
+  ],
+  "catchFrames": [
+   280,
+   257,
+   289,
+   222,
+   279
+  ],
+  "hash": "0474f5232cf94741848b1571ca47547a327c36127e40b23c692d32dbfca845d6"
+ },
+ {
+  "digest": "6b17ec48b1af531344d9dc97236dfbaa01dbb643f8dc5e8e7d74893d029695a8",
+  "chute": -2,
+  "balls": 10,
+  "slots": [
+   1,
+   4,
+   5,
+   1,
+   5,
+   0,
+   4,
+   7,
+   8,
+   6
+  ],
+  "catchFrames": [
+   265,
+   232,
+   308,
+   259,
+   243,
+   277,
+   262,
+   282,
+   309,
+   267
+  ],
+  "hash": "d3189c55ea78fd631e8f1a410f75488c2ae1498f649412533e4827478dc54910"
+ },
+ {
+  "digest": "37ff015533c1d7e0f2c23891cc7acce7c145d454bac8cd0223649591ef63bb84",
+  "chute": -1,
+  "balls": 1,
+  "slots": [
+   3
+  ],
+  "catchFrames": [
+   222
+  ],
+  "hash": "3c2fe24727295aded5387cbca83f2a03287c0a8cf7e43a4f03ce549a0b063a62"
+ },
+ {
+  "digest": "2d8497ebfa326c33cf13a576d198a006c5e8cdf71c4d9f51e56aa1174930d9fb",
+  "chute": 0,
+  "balls": 3,
+  "slots": [
+   2,
+   5,
+   4
+  ],
+  "catchFrames": [
+   205,
+   252,
+   238
+  ],
+  "hash": "4cb1dd417bbce1ef1804dbd5ae1501159a57184e9035a064332d078db3a17897"
+ },
+ {
+  "digest": "04dc5156cc2a5e801ff4bbe4356b61488974e266aab785f0c1962adc0f2c770f",
+  "chute": 1,
+  "balls": 5,
+  "slots": [
+   5,
+   4,
+   7,
+   9,
+   9
+  ],
+  "catchFrames": [
+   271,
+   203,
+   267,
+   206,
+   222
+  ],
+  "hash": "d45622544158840b8f2ce42fe207a8115a78beb9269d3107c22961aec6228e2a"
+ },
+ {
+  "digest": "332b9a77fff028ed11eacc633fab8d239ab85f35e0eee2520f25c0f0e598b7a9",
+  "chute": 2,
+  "balls": 10,
+  "slots": [
+   4,
+   8,
+   7,
+   9,
+   9,
+   6,
+   5,
+   5,
+   8,
+   7
+  ],
+  "catchFrames": [
+   279,
+   191,
+   296,
+   185,
+   250,
+   316,
+   236,
+   310,
+   264,
+   269
+  ],
+  "hash": "d3b2e55a725b0554b15340b4fae0893fa59d11253fd7b129a010a6b93157d705"
+ },
+ {
+  "digest": "934dd61b78d8a4dff1e1df43a5024ed4adad965079cb3d767c013e5491e628f5",
+  "chute": 3,
+  "balls": 1,
+  "slots": [
+   9
+  ],
+  "catchFrames": [
+   202
+  ],
+  "hash": "a3cdda51de9bbe3029609bed0976637804a251bd5b72ebcfad5f9c3a0376040e"
+ },
+ {
+  "digest": "1dafaaebdc78671c24d2625459fa4abca2c5652b7bec8ae5c89332f0af917776",
+  "chute": -3,
+  "balls": 3,
+  "slots": [
+   1,
+   4,
+   1
+  ],
+  "catchFrames": [
+   274,
+   235,
+   242
+  ],
+  "hash": "45011df349c31f52accfc93a7b76eccb18344f668fc15083f74932117ffc8b32"
+ },
+ {
+  "digest": "56eef89411ae3a5e94bd8a0b8891c3bf9684a4c8c1e94034e3b152774bd8a572",
+  "chute": -2,
+  "balls": 5,
+  "slots": [
+   3,
+   2,
+   4,
+   4,
+   4
+  ],
+  "catchFrames": [
+   225,
+   215,
+   225,
+   198,
+   245
+  ],
+  "hash": "ce2cbc1ad71d65934b297648e639148b1f6169535bafacf052b39c8373c16765"
+ },
+ {
+  "digest": "3accaca7e4d23690ffc18ffa31164d9d744dfa44ec9a088b3083c54fe28ffd91",
+  "chute": -1,
+  "balls": 10,
+  "slots": [
+   1,
+   4,
+   3,
+   4,
+   3,
+   5,
+   3,
+   5,
+   4,
+   5
+  ],
+  "catchFrames": [
+   244,
+   283,
+   289,
+   230,
+   223,
+   299,
+   324,
+   329,
+   271,
+   236
+  ],
+  "hash": "dc4c8cff8462d52243097b156a6a8c4dd5fbefdabbca543c93b97431524153b3"
+ },
+ {
+  "digest": "97269e26cf25371ca8c7a86c69228becef1f0122facca48de2bc8aafdae4f152",
+  "chute": 0,
+  "balls": 1,
+  "slots": [
+   4
+  ],
+  "catchFrames": [
+   232
+  ],
+  "hash": "dfefbbdf0239955cbee9392b1d96c1c442f9dc5a09677eda7002041295dea7c3"
+ },
+ {
+  "digest": "6ffe84956dce9ab9d7a8b7046934202565f4b26d3bb8b54ae6d46ccd1b4c00c7",
+  "chute": 1,
+  "balls": 3,
+  "slots": [
+   4,
+   6,
+   6
+  ],
+  "catchFrames": [
+   230,
+   293,
+   218
+  ],
+  "hash": "5070b7d0ddec49cfad96b247cc2e9459324d322c496ccdc88b5bbf87cc643121"
+ },
+ {
+  "digest": "708e65ff503b04548cb609f92cf711ff982870732954ebe2f990a6441b19663e",
+  "chute": 2,
+  "balls": 5,
+  "slots": [
+   6,
+   6,
+   6,
+   7,
+   7
+  ],
+  "catchFrames": [
+   231,
+   252,
+   236,
+   278,
+   210
+  ],
+  "hash": "9cb729a7ab162f5ba1dbe51a6d621f902ac276d406428b4392533e95131141a0"
+ },
+ {
+  "digest": "f888e20eb333e41ffc1e06ca6eb92e67f5866280fb596d0bf225ac740313d348",
+  "chute": 3,
+  "balls": 10,
+  "slots": [
+   2,
+   6,
+   7,
+   10,
+   7,
+   4,
+   4,
+   6,
+   6,
+   7
+  ],
+  "catchFrames": [
+   234,
+   261,
+   298,
+   265,
+   274,
+   244,
+   250,
+   265,
+   343,
+   221
+  ],
+  "hash": "579c95d9b063b4b28c806c6165e5fb76022fca645c5f83b54df4ed35e3a2c7a4"
+ }
+]

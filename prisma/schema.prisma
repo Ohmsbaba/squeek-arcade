@@ -1,0 +1,318 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Game {
+  RUN
+  DROPS
+}
+
+enum RoundStatus {
+  /// Stake taken, wheel not yet stopped. Run only: a drop settles in the same transaction it starts.
+  ACTIVE
+  WON
+  LOST
+}
+
+enum SeedStatus {
+  COMMITTED
+  IN_PLAY
+  REVEALED
+}
+
+enum TxType {
+  GRANT
+  DAILY
+  REFILL
+  STAKE
+  PAYOUT
+}
+
+enum XpSource {
+  GAME
+  CHALLENGE
+  ACHIEVEMENT
+}
+
+model User {
+  id         String   @id @default(cuid())
+  createdAt  DateTime @default(now())
+  lastSeenAt DateTime @default(now())
+  /// Keyed hash of the IP that created a guest. Used to slow down guest farming, never stored raw.
+  ipHash     String?
+
+  wallet       Wallet?
+  profile      PlayerProfile?
+  balance      DemoBalance?
+  seeds        FairnessSeed[]
+  rounds       GameRound[]
+  transactions DemoTransaction[]
+  achievements PlayerAchievement[]
+  xp           XpTransaction[]
+  challenges   DailyChallengeProgress[]
+  squeekPlays  PlayerNft[]
+
+  @@index([ipHash, createdAt])
+  @@index([lastSeenAt])
+  @@map("users")
+}
+
+/// Linked by a signed message. One wallet, one player.
+model Wallet {
+  address  String   @id
+  userId   String   @unique
+  linkedAt DateTime @default(now())
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("wallets")
+}
+
+/// One-time sign-in challenge.
+model AuthNonce {
+  nonce     String   @id
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([expiresAt])
+  @@map("auth_nonces")
+}
+
+model PlayerProfile {
+  userId      String   @id
+  /// Unique ignoring case. Null until the player picks one, then shown as Squeeker-XXXX.
+  username    String?  @unique
+  usernameKey String?  @unique
+  shareId     String   @unique
+  /// "hamster:<key>" or "squeek:<tokenId>". Ownership is re-checked whenever it's shown as a Squeek.
+  avatar      String   @default("hamster:classic")
+  /// Trail colour for the default token. Unlocked by arcade level.
+  cosmetic    String   @default("gold")
+  xp          Int      @default(0)
+  gamesPlayed Int      @default(0)
+  wins        Int      @default(0)
+  losses      Int      @default(0)
+  runsPlayed  Int      @default(0)
+  dropsPlayed Int      @default(0)
+  cashouts    Int      @default(0)
+  /// Hundredths. 241 means 2.41x.
+  bestRunMult Int      @default(0)
+  bestDropMult Int     @default(0)
+  bestPayout  BigInt   @default(0)
+  blocksCaught Int     @default(0)
+  activeDays  Int      @default(0)
+  lastPlayedDay String?
+  /// XP earned from plays today, with its UTC day. Keeps idle farming from topping the XP board.
+  playXpDay   String?
+  playXpToday Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([xp(sort: Desc)])
+  @@index([gamesPlayed(sort: Desc)])
+  @@index([bestRunMult(sort: Desc)])
+  @@index([bestDropMult(sort: Desc)])
+  @@map("player_profiles")
+}
+
+model DemoBalance {
+  userId     String   @id
+  /// Free demo credits. A CHECK constraint in the migration forbids a negative balance.
+  amount     BigInt
+  lastDailyDay String?
+  refillDay  String?
+  refillCount Int     @default(0)
+  lastRefillAt DateTime?
+  updatedAt  DateTime @updatedAt
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("demo_balances")
+}
+
+model DemoTransaction {
+  id           String   @id @default(cuid())
+  userId       String
+  type         TxType
+  /// Signed: stakes are negative.
+  amount       BigInt
+  balanceAfter BigInt
+  roundId      String?
+  note         String?
+  createdAt    DateTime @default(now())
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  round        GameRound? @relation(fields: [roundId], references: [id], onDelete: SetNull)
+
+  /// A round can be staked once and paid once, whatever the requests do.
+  @@unique([roundId, type])
+  @@index([userId, createdAt(sort: Desc)])
+  @@index([type, createdAt])
+  @@map("demo_transactions")
+}
+
+/// One per round, committed before the player chooses a client seed, revealed when it settles.
+model FairnessSeed {
+  id         String     @id @default(cuid())
+  userId     String
+  serverSeed String
+  hash       String     @unique
+  nonce      Int
+  status     SeedStatus @default(COMMITTED)
+  createdAt  DateTime   @default(now())
+  revealedAt DateTime?
+  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  round      GameRound?
+
+  @@unique([userId, nonce])
+  @@index([userId, status])
+  @@map("fairness_seeds")
+}
+
+model GameRound {
+  id            String      @id @default(cuid())
+  userId        String
+  game          Game
+  status        RoundStatus @default(ACTIVE)
+  stake         Int
+  /// Sent by the client, so a retried start or drop returns the same round.
+  requestKey    String
+  seedId        String      @unique
+  clientSeed    String
+  createdAt     DateTime    @default(now())
+  settledAt     DateTime?
+  payout        Int?
+  /// Hundredths. Run: the cash-out multiplier, or the stop on a loss. Drops: the slot's.
+  resultMult    Int?
+  /// Used in links, so a round's id doesn't need to be guessable to share it.
+  shareId       String      @unique
+
+  // Squeek Run
+  /// Hash of the Sepolia block read when the round started, mixed into the digest.
+  beacon        String?
+  /// The real wheel's average speed before the start, from settled work on SqueekCore.
+  liveRpm       Int?
+  /// Payout boost locked in from that speed, in basis points. Doesn't touch the stop.
+  boostBp       Int         @default(0)
+  /// The real Squeek block height at the start, and how many were mined before this round ended.
+  startBlock    Int?
+  blocksMined   Int         @default(0)
+  liftoffAt     DateTime?
+  crashMult     Int?
+  autoCashout   Int?
+  cashedOut     Boolean?
+
+  // Squeek Drops
+  chute         Int?
+  balls         Int         @default(1)
+  /// Where every token landed. slot and resultMult describe the best of them.
+  slots         Int[]       @default([])
+  tokenIds      Int[]       @default([])
+  slot          Int?
+  /// Which Squeek fell. Cosmetic. Not an input to the result.
+  tokenId       Int?
+  tokenLevel    Int?
+
+  xpAwarded     Int         @default(0)
+
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  seed          FairnessSeed @relation(fields: [seedId], references: [id])
+  transactions  DemoTransaction[]
+
+  @@unique([userId, requestKey])
+  @@index([userId, createdAt(sort: Desc)])
+  @@index([game, settledAt])
+  @@index([game, status])
+  @@map("game_rounds")
+}
+
+/// Cached public metadata from the official API. The art is an SVG data URI, shown only via <img> or a canvas.
+model Nft {
+  tokenId     Int      @id
+  name        String
+  level       Int
+  imageUri    String
+  attributes  Json
+  fetchedAt   DateTime @default(now())
+
+  plays       PlayerNft[]
+
+  @@map("nfts")
+}
+
+/// A Squeek a player has actually dropped. Backs Squeek Collector, and only exists after an ownership check.
+model PlayerNft {
+  userId    String
+  tokenId   Int
+  firstUsed DateTime @default(now())
+  plays     Int      @default(1)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  nft       Nft      @relation(fields: [tokenId], references: [tokenId], onDelete: Cascade)
+
+  @@id([userId, tokenId])
+  @@map("player_nfts")
+}
+
+model Achievement {
+  key         String   @id
+  name        String
+  description String
+  xp          Int
+  sort        Int
+  players     PlayerAchievement[]
+
+  @@map("achievements")
+}
+
+model PlayerAchievement {
+  userId         String
+  achievementKey String
+  earnedAt       DateTime @default(now())
+  roundId        String?
+  user           User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  achievement    Achievement @relation(fields: [achievementKey], references: [key], onDelete: Cascade)
+
+  @@id([userId, achievementKey])
+  @@index([achievementKey])
+  @@map("player_achievements")
+}
+
+model XpTransaction {
+  id        String   @id @default(cuid())
+  userId    String
+  source    XpSource
+  amount    Int
+  ref       String?
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt(sort: Desc)])
+  @@index([createdAt])
+  @@map("xp_transactions")
+}
+
+model DailyChallengeProgress {
+  userId      String
+  day         String
+  key         String
+  progress    Int       @default(0)
+  completedAt DateTime?
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([userId, day, key])
+  @@map("daily_challenge_progress")
+}
+
+/// What went wrong on the server. Message only, with no request bodies, seeds or secrets.
+model ErrorLog {
+  id        String   @id @default(cuid())
+  scope     String
+  message   String
+  createdAt DateTime @default(now())
+
+  @@index([createdAt(sort: Desc)])
+  @@map("error_logs")
+}
